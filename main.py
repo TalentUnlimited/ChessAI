@@ -22,7 +22,7 @@ def evaluate(board):
 
 def negamax(board, depth):
 	if depth == 0:
-		return [0, evaluate(board)]
+		return evaluate(board)
 
 	moves = list(board.legal_moves)
 
@@ -32,16 +32,16 @@ def negamax(board, depth):
 	for move in moves:
 		board.push_san(str(move))
 		
-		score = -negamax(board, depth-1)[1]
+		score = -negamax(board, depth-1)
 		if score > best_evaluation:
 			best_evaluation = score
 			best_move = move
 		
 		board.pop()
 
-	return [best_move, best_evaluation]
+	return best_evaluation
 
-def minimax(board, depth, maximizingPlayer):
+def minimax(board, depth, alpha, beta, maximizingPlayer):
 	if depth == 0:
 		return evaluate(board)
 	
@@ -51,9 +51,12 @@ def minimax(board, depth, maximizingPlayer):
 
 		for move in moves:
 			board.push_san(str(move))
-			evaluation = minimax(board, depth-1, false)
+			evaluation = minimax(board, depth-1, alpha, beta, False)
 			maxEval = max(maxEval, evaluation)
+			alpha = max(alpha, evaluation)
 			board.pop()
+			if beta <= alpha:
+				break
 		
 		return maxEval
 	else:
@@ -62,11 +65,15 @@ def minimax(board, depth, maximizingPlayer):
 
 		for move in moves:
 			board.push_san(str(move))
-			eval = minimax(board, depth-1, true)
-			minEval = min(minEval, eval)
+			evaluation = minimax(board, depth-1, alpha, beta, True)
+			minEval = min(minEval, evaluation)
+			beta = min(beta, evaluation)
 			board.pop()
+			if beta <= alpha:
+				break
 		
 		return minEval
 
 
-minimax(board, 3, True)
+print(minimax(chess.Board(fen='3r1rk1/ppp2pp1/3pb2p/6q1/3RP3/P4P2/1PPQB1PP/2K4R w - - 5 16'), 4, -999, 999, True))
+print(negamax(chess.Board(fen='3r1rk1/ppp2pp1/3pb2p/6q1/3RP3/P4P2/1PPQB1PP/2K4R w - - 5 16'), 4))
