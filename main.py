@@ -4,11 +4,14 @@ import math
 
 board = chess.Board()
 
-pawnValue = 100
-knightValue = 300
-bishopValue = 300
-rookValue = 500
-queenValue = 900
+piece_values = {
+	chess.PAWN: 100,
+	chess.KNIGHT: 300,
+	chess.BISHOP: 300,
+	chess.ROOK: 500,
+	chess.QUEEN: 900,
+	chess.KING: 20000
+}
 
 infinity = math.inf
 
@@ -86,10 +89,24 @@ piece_square_tables = {
 }
 
 def evaluate(board):
-	fen = board.fen().split(' ')[0]
+	#master_board_value_matrix = numpy.array([[0]*8]*8)
+	colorwise_value_matrix = [numpy.array([[0]*8]*8), numpy.array([[0]*8]*8)]
 
-	whiteEval = (fen.count('P')*pawnValue) + (fen.count('N')*knightValue) + (fen.count('B')*bishopValue) + (fen.count('R')*rookValue) + (fen.count('Q')*queenValue)
-	blackEval = (fen.count('p')*pawnValue) + (fen.count('n')*knightValue) + (fen.count('b')*bishopValue) + (fen.count('r')*rookValue) + (fen.count('q')*queenValue)
+	for color in [chess.WHITE, chess.BLACK]:
+		for piece in [chess.PAWN, chess.KNIGHT, chess.BISHOP, chess.ROOK, chess.QUEEN, chess.KING]:
+			piece_map = numpy.flipud(numpy.array(board.pieces(piece_type=piece, color=color).tolist()).reshape(8,8))
+			piece_square_table_map = piece_map * (piece_square_tables[piece] if color == chess.WHITE else numpy.flip(piece_square_tables[piece]))
+			piece_value_map = piece_map * piece_values[piece]
+
+			#master_board_value_matrix += (piece_square_table_map + piece_value_map)
+			colorwise_value_matrix[0 if color == chess.WHITE else 1] += (piece_square_table_map + piece_value_map)
+
+	# print(master_board_value_matrix)
+	# print(colorwise_value_matrix[0])
+	# print(colorwise_value_matrix[1])
+
+	whiteEval = colorwise_value_matrix[0].sum()
+	blackEval = colorwise_value_matrix[1].sum()
 
 	evaluation = whiteEval - blackEval
 
