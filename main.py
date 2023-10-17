@@ -41,10 +41,32 @@ def negamax(board, depth):
 
 	return [best_move, best_evaluation]
 
-for x in range(50):
-	move1 = negamax(board, 3)[0]
-	board.push_san(str(move1))
-	move2 = negamax(board, 3)[0]
-	board.push_san(str(move2))
+def minimax(board, depth, maximizingPlayer):
+	if depth == 0:
+		return evaluate(board)
+	
+	if maximizingPlayer:
+		maxEval = -999
+		moves = list(board.legal_moves)
 
-	print(f'{x+1}. {move1} {move2}')
+		for move in moves:
+			board.push_san(str(move))
+			evaluation = minimax(board, depth-1, false)
+			maxEval = max(maxEval, evaluation)
+			board.pop()
+		
+		return maxEval
+	else:
+		minEval = 999
+		moves = list(board.legal_moves)
+
+		for move in moves:
+			board.push_san(str(move))
+			eval = minimax(board, depth-1, true)
+			minEval = min(minEval, eval)
+			board.pop()
+		
+		return minEval
+
+
+minimax(board, 3, True)
