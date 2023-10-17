@@ -1,5 +1,6 @@
 import chess
 import numpy
+import math
 
 board = chess.Board()
 
@@ -8,6 +9,8 @@ knightValue = 300
 bishopValue = 300
 rookValue = 500
 queenValue = 900
+
+infinity = math.inf
 
 piece_square_tables = {
 	'pawn': [
