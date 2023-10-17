@@ -9,6 +9,79 @@ bishopValue = 300
 rookValue = 500
 queenValue = 900
 
+piece_square_tables = {
+	'pawn': [
+		[0,  0,  0,  0,  0,  0,  0,  0],
+		[50, 50, 50, 50, 50, 50, 50, 50],
+		[10, 10, 20, 30, 30, 20, 10, 10],
+		[5,  5, 10, 25, 25, 10,  5,  5],
+		[0,  0,  0, 20, 20,  0,  0,  0],
+		[5, -5,-10,  0,  0,-10, -5,  5],
+		[5, 10, 10,-20,-20, 10, 10,  5],
+		[0,  0,  0,  0,  0,  0,  0,  0]
+	],
+	'knight': [
+		[-50,-40,-30,-30,-30,-30,-40,-50],
+		[-40,-20,  0,  0,  0,  0,-20,-40],
+		[-30,  0, 10, 15, 15, 10,  0,-30],
+		[-30,  5, 15, 20, 20, 15,  5,-30],
+		[-30,  0, 15, 20, 20, 15,  0,-30],
+		[-30,  5, 10, 15, 15, 10,  5,-30],
+		[-40,-20,  0,  5,  5,  0,-20,-40],
+		[-50,-40,-30,-30,-30,-30,-40,-50]
+	],
+	'bishop': [
+		[-20,-10,-10,-10,-10,-10,-10,-20],
+		[-10,  0,  0,  0,  0,  0,  0,-10],
+		[-10,  0,  5, 10, 10,  5,  0,-10],
+		[-10,  5,  5, 10, 10,  5,  5,-10],
+		[-10,  0, 10, 10, 10, 10,  0,-10],
+		[-10, 10, 10, 10, 10, 10, 10,-10],
+		[-10,  5,  0,  0,  0,  0,  5,-10],
+		[-20,-10,-10,-10,-10,-10,-10,-20]
+	],
+	'rook': [
+		[0,  0,  0,  0,  0,  0,  0,  0],
+		[5, 10, 10, 10, 10, 10, 10,  5],
+		[-5,  0,  0,  0,  0,  0,  0, -5],
+		[-5,  0,  0,  0,  0,  0,  0, -5],
+		[-5,  0,  0,  0,  0,  0,  0, -5],
+		[-5,  0,  0,  0,  0,  0,  0, -5],
+		[-5,  0,  0,  0,  0,  0,  0, -5],
+		[0,  0,  0,  5,  5,  0,  0,  0]
+	],
+	'queen': [
+		[-20,-10,-10, -5, -5,-10,-10,-20],
+		[-10,  0,  0,  0,  0,  0,  0,-10],
+		[-10,  0,  5,  5,  5,  5,  0,-10],
+		[-5,  0,  5,  5,  5,  5,  0, -5],
+		[0,  0,  5,  5,  5,  5,  0, -5],
+		[-10,  5,  5,  5,  5,  5,  0,-10],
+		[-10,  0,  5,  0,  0,  0,  0,-10],
+		[-20,-10,-10, -5, -5,-10,-10,-20]
+	],
+	'king': [
+		[-30,-40,-40,-50,-50,-40,-40,-30],
+		[-30,-40,-40,-50,-50,-40,-40,-30],
+		[-30,-40,-40,-50,-50,-40,-40,-30],
+		[-30,-40,-40,-50,-50,-40,-40,-30],
+		[-20,-30,-30,-40,-40,-30,-30,-20],
+		[-10,-20,-20,-20,-20,-20,-20,-10],
+		[20, 20,  0,  0,  0,  0, 20, 20],
+		[20, 30, 10,  0,  0, 10, 30, 20]
+	],
+	'king_endgame': [
+		[-50,-40,-30,-20,-20,-30,-40,-50],
+		[-30,-20,-10,  0,  0,-10,-20,-30],
+		[-30,-10, 20, 30, 30, 20,-10,-30],
+		[-30,-10, 30, 40, 40, 30,-10,-30],
+		[-30,-10, 30, 40, 40, 30,-10,-30],
+		[-30,-10, 20, 30, 30, 20,-10,-30],
+		[-30,-30,  0,  0,  0,  0,-30,-30],
+		[-50,-30,-30,-30,-30,-30,-30,-50]
+	]
+}
+
 def evaluate(board):
 	fen = board.fen().split(' ')[0]
 
@@ -27,7 +100,7 @@ def negamax(board, depth):
 
 	moves = list(board.legal_moves)
 
-	best_evaluation = -999
+	best_evaluation = -infinity
 	best_move = 0
 
 	for move in moves:
@@ -48,11 +121,11 @@ def alphabeta(board, depth, alpha, beta, maximizingPlayer):
 	
 	if len(list(board.legal_moves)) == 0:
 		if board.is_check:
-			return -999
+			return -infinity
 		return 0
 
 	if maximizingPlayer:
-		maxEval = -999
+		maxEval = -infinity
 		moves = list(board.legal_moves)
 
 		for move in moves:
@@ -66,7 +139,7 @@ def alphabeta(board, depth, alpha, beta, maximizingPlayer):
 		
 		return maxEval
 	else:
-		minEval = 999
+		minEval = infinity
 		moves = list(board.legal_moves)
 
 		for move in moves:
@@ -83,13 +156,13 @@ def alphabeta(board, depth, alpha, beta, maximizingPlayer):
 def alphabetaRoot(board, depth):
 	moves = list(board.legal_moves)
 
-	best_evaluation = -999
+	best_evaluation = -infinity
 	best_move = None
 
 	for move in moves:
 		board.push_san(str(move))
 		#print(move, '\n', board)
-		evaluation = alphabeta(board, depth-1, -999, 999, board.turn)
+		evaluation = alphabeta(board, depth-1, -infinity, infinity, board.turn)
 
 		board.pop()
 
