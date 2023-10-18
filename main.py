@@ -195,7 +195,13 @@ def alphabetaRoot(board, depth):
 def ordermoves(moves):
 	pass
 
-board = chess.Board(fen='rnbqkb1r/pppp1pp1/4pn1p/6B1/3PP3/8/PPP2PPP/RN1QKBNR w KQkq - 0 4')
+#board = chess.Board(fen='rnbqkb1r/pppp1pp1/4pn1p/6B1/3PP3/8/PPP2PPP/RN1QKBNR w KQkq - 0 4')
 
 
-print(alphabetaRoot(board, 5))
+# for x in range(50):
+# 	move1 = alphabetaRoot(board, 3)
+# 	board.push_san(str(move1))
+# 	move2 = alphabetaRoot(board, 3)
+# 	board.push_san(str(move2))
+
+# 	print(f'{x+1}. {move1} {move2}')
