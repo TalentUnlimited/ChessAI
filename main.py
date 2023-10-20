@@ -147,6 +147,7 @@ def alphabeta(board, depth, alpha, beta, maximizingPlayer):
 	if maximizingPlayer:
 		maxEval = -infinity
 		moves = list(board.legal_moves)
+		moves = ordermoves(moves)
 
 		for move in moves:
 			board.push_san(str(move))
@@ -161,6 +162,7 @@ def alphabeta(board, depth, alpha, beta, maximizingPlayer):
 	else:
 		minEval = infinity
 		moves = list(board.legal_moves)
+		moves = ordermoves(moves)
 
 		for move in moves:
 			board.push_san(str(move))
@@ -175,6 +177,7 @@ def alphabeta(board, depth, alpha, beta, maximizingPlayer):
 
 def alphabetaRoot(board, depth):
 	moves = list(board.legal_moves)
+	moves = ordermoves(moves)
 
 	best_evaluation = -infinity
 	best_move = None
@@ -193,7 +196,24 @@ def alphabetaRoot(board, depth):
 	return best_move
 
 def ordermoves(moves):
-	pass
+	moveScores = []
+
+	for move in moves:
+		moveScoreGuess = 0
+		movingPiece = board.piece_at(move.from_square)
+		capturingPiece = board.piece_at(move.to_square)
+
+		if capturingPiece != None:
+			moveScoreGuess = 10 * piece_values[capturingPiece.piece_type] - piece_values[movingPiece.piece_type]
+
+		if move.promotion != None:
+			moveScoreGuess += piece_values[move.promotion]
+		
+		moveScores.append(moveScoreGuess)
+
+	moveScoresDict = dict(zip(moves, moveScores)) 
+	
+	return list(dict(sorted(moveScoresDict.items(), key=lambda item: item[1], reverse=True)).keys())
 
 #board = chess.Board(fen='rnbqkb1r/pppp1pp1/4pn1p/6B1/3PP3/8/PPP2PPP/RN1QKBNR w KQkq - 0 4')
 
