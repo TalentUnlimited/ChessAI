@@ -1,4 +1,5 @@
 import chess
+import chess.polyglot
 import numpy
 import math
 
@@ -135,7 +136,7 @@ def negamax(board, depth):
 
 	return best_evaluation
 
-def alphabeta(board, depth, alpha, beta, maximizingPlayer):
+def alphabeta(board, depth, alpha, beta, maximizingPlayer, transpositions):
 	if depth == 0:
 		return evaluate(board)
 	
@@ -151,7 +152,13 @@ def alphabeta(board, depth, alpha, beta, maximizingPlayer):
 
 		for move in moves:
 			board.push_san(str(move))
-			evaluation = alphabeta(board, depth-1, alpha, beta, False)
+
+			zobrist_hash = chess.polyglot.zobrist_hash(board)
+			if zobrist_hash in transpositions:
+				evaluation = transpositions[zobrist_hash]
+			else:
+				evaluation = alphabeta(board, depth-1, alpha, beta, False, transpositions)
+				transpositions[zobrist_hash] = evaluation
 			maxEval = max(maxEval, evaluation)
 			alpha = max(alpha, evaluation)
 			board.pop()
@@ -166,7 +173,13 @@ def alphabeta(board, depth, alpha, beta, maximizingPlayer):
 
 		for move in moves:
 			board.push_san(str(move))
-			evaluation = alphabeta(board, depth-1, alpha, beta, True)
+			
+			zobrist_hash = chess.polyglot.zobrist_hash(board)
+			if zobrist_hash in transpositions:
+				evaluation = transpositions[zobrist_hash]
+			else:
+				evaluation = alphabeta(board, depth-1, alpha, beta, False, transpositions)
+				transpositions[zobrist_hash] = evaluation
 			minEval = min(minEval, evaluation)
 			beta = min(beta, evaluation)
 			board.pop()
@@ -182,10 +195,12 @@ def alphabetaRoot(board, depth):
 	best_evaluation = -infinity
 	best_move = None
 
+	transpositions = {}
+
 	for move in moves:
 		board.push_san(str(move))
 		#print(move, '\n', board)
-		evaluation = alphabeta(board, depth-1, -infinity, infinity, board.turn)
+		evaluation = alphabeta(board, depth-1, -infinity, infinity, board.turn, transpositions)
 
 		board.pop()
 
