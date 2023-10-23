@@ -134,7 +134,7 @@ def negamax(board, depth):
 
 	return best_evaluation
 
-def alphabeta(board, depth, alpha, beta, transpositions={}):
+def alphabeta(board, depth, alpha, beta, transpositions):
 	if depth == 0 or board.is_game_over():
 		return board.peek(), evaluate(board)
 
@@ -209,11 +209,10 @@ def ordermoves(moves):
 
 #board = chess.Board(fen='rnbqkb1r/pppp1pp1/4pn1p/6B1/3PP3/8/PPP2PPP/RN1QKBNR w KQkq - 0 4')
 
+# for x in range(50):
+# 	move1, _ = alphabeta(board, 3, -infinity, infinity)
+# 	board.push_san(str(move1))
+# 	move2, _ = alphabeta(board, 3, -infinity, infinity)
+# 	board.push_san(str(move2))
 
-for x in range(50):
-	move1, _ = alphabeta(board, 4, -infinity, infinity)
-	board.push_san(str(move1))
-	move2, _ = alphabeta(board, 4, -infinity, infinity)
-	board.push_san(str(move2))
-
-	print(f'{x+1}. {move1} {move2}')
+# 	print(f'{x+1}. {move1} {move2}')
