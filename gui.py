@@ -34,7 +34,8 @@ while running:
 					if (square != move) and chess.Move.from_uci(pseudo_move) in board.legal_moves:
 						move += square
 						makeMove(move)
-						makeComputerMove(3)
+						if len(list(board.legal_moves)) != 0:
+							makeComputerMove(4)
 						move = ""
 					else:
 						print(f"invalid move - {pseudo_move} is not possible")
@@ -45,7 +46,8 @@ while running:
 		renderBoard()
 
 	def makeComputerMove(depth):	
-		board.push_san(str(alphabetaRoot(board, depth)))
+		move, _ = alphabeta(board, depth, -infinity, infinity)
+		board.push_san(str(move))
 		renderBoard()
 
 	def renderBoard():
