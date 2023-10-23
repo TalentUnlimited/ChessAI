@@ -111,9 +111,7 @@ def evaluate(board):
 
 	evaluation = whiteEval - blackEval
 
-	perspective = 1 if board.turn == chess.WHITE else -1
-	
-	return evaluation * perspective
+	return evaluation
 
 def negamax(board, depth):
 	if depth == 0:
@@ -136,17 +134,13 @@ def negamax(board, depth):
 
 	return best_evaluation
 
-def alphabeta(board, depth, alpha, beta, maximizingPlayer, transpositions):
-	if depth == 0:
-		return evaluate(board)
-	
-	if len(list(board.legal_moves)) == 0:
-		if board.is_check:
-			return -infinity
-		return 0
+def alphabeta(board, depth, alpha, beta, transpositions={}):
+	if depth == 0 or board.is_game_over():
+		return board.peek(), evaluate(board)
 
-	if maximizingPlayer:
+	if board.turn == chess.WHITE:
 		maxEval = -infinity
+		best_move = None
 		moves = list(board.legal_moves)
 		moves = ordermoves(moves)
 
@@ -157,17 +151,20 @@ def alphabeta(board, depth, alpha, beta, maximizingPlayer, transpositions):
 			if zobrist_hash in transpositions:
 				evaluation = transpositions[zobrist_hash]
 			else:
-				evaluation = alphabeta(board, depth-1, alpha, beta, False, transpositions)
+				_, evaluation = alphabeta(board, depth-1, alpha, beta, transpositions)
 				transpositions[zobrist_hash] = evaluation
-			maxEval = max(maxEval, evaluation)
+			if evaluation > maxEval:
+				best_move = move
+				maxEval = evaluation
 			alpha = max(alpha, evaluation)
 			board.pop()
 			if beta <= alpha:
 				break
 		
-		return maxEval
+		return best_move, maxEval
 	else:
 		minEval = infinity
+		best_move = None
 		moves = list(board.legal_moves)
 		moves = ordermoves(moves)
 
@@ -178,37 +175,17 @@ def alphabeta(board, depth, alpha, beta, maximizingPlayer, transpositions):
 			if zobrist_hash in transpositions:
 				evaluation = transpositions[zobrist_hash]
 			else:
-				evaluation = alphabeta(board, depth-1, alpha, beta, False, transpositions)
+				_, evaluation = alphabeta(board, depth-1, alpha, beta, transpositions)
 				transpositions[zobrist_hash] = evaluation
-			minEval = min(minEval, evaluation)
+			if evaluation < minEval:
+				best_move = move
+				minEval = evaluation
 			beta = min(beta, evaluation)
 			board.pop()
 			if beta <= alpha:
 				break
 		
-		return minEval
-
-def alphabetaRoot(board, depth):
-	moves = list(board.legal_moves)
-	moves = ordermoves(moves)
-
-	best_evaluation = -infinity
-	best_move = None
-
-	transpositions = {}
-
-	for move in moves:
-		board.push_san(str(move))
-		#print(move, '\n', board)
-		evaluation = alphabeta(board, depth-1, -infinity, infinity, board.turn, transpositions)
-
-		board.pop()
-
-		if evaluation > best_evaluation:
-			best_evaluation = evaluation
-			best_move = move
-	
-	return best_move
+		return best_move, minEval
 
 def ordermoves(moves):
 	moveScores = []
@@ -233,10 +210,10 @@ def ordermoves(moves):
 #board = chess.Board(fen='rnbqkb1r/pppp1pp1/4pn1p/6B1/3PP3/8/PPP2PPP/RN1QKBNR w KQkq - 0 4')
 
 
-# for x in range(50):
-# 	move1 = alphabetaRoot(board, 3)
-# 	board.push_san(str(move1))
-# 	move2 = alphabetaRoot(board, 3)
-# 	board.push_san(str(move2))
+for x in range(50):
+	move1, _ = alphabeta(board, 4, -infinity, infinity)
+	board.push_san(str(move1))
+	move2, _ = alphabeta(board, 4, -infinity, infinity)
+	board.push_san(str(move2))
 
-# 	print(f'{x+1}. {move1} {move2}')
+	print(f'{x+1}. {move1} {move2}')
