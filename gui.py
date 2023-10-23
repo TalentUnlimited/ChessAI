@@ -10,6 +10,7 @@ WIDTH = 500
 HEIGHT = 500
 
 win = pygame.display.set_mode((WIDTH,HEIGHT))
+pygame.display.set_caption('Chess AI')
 
 LEFT = 1
 RIGHT = 3
@@ -46,7 +47,7 @@ while running:
 		renderBoard()
 
 	def makeComputerMove(depth):	
-		move, _ = alphabeta(board, depth, -infinity, infinity)
+		move, _ = alphabeta(board, depth, -infinity, infinity, {})
 		board.push_san(str(move))
 		renderBoard()
 
