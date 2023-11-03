@@ -12,6 +12,8 @@ HEIGHT = 500
 win = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption('Chess AI')
 
+font = pygame.font.SysFont(None, int(WIDTH/20))
+
 LEFT = 1
 RIGHT = 3
 
@@ -41,7 +43,7 @@ while running:
 						highlighted = []
 						renderBoard()
 						if len(list(board.legal_moves)) != 0:
-							makeComputerMove(5)
+							makeComputerMove(4)
 					else:
 						if move != square:
 							movingsquare = board.piece_at(chess.Move.from_uci(pseudo_move).from_square)
@@ -111,6 +113,12 @@ while running:
 				if board_matrix[y][x] != ' ':
 					i = pygame.transform.scale(pygame.image.load(f"D:/ChessAI/Chess Pieces/{board_matrix[y][x]}.png"),(int(WIDTH/8), int(HEIGHT/8)))
 					win.blit(i, (x*(WIDTH/8),y*(HEIGHT/8)))
+
+		for x in range(8):
+			win.blit(font.render(chr(97+x), True, (234, 233, 210) if x % 2 == 0 else (75, 115, 153)), (x*(WIDTH/8) + WIDTH/10 , HEIGHT - HEIGHT/25))
+
+		for y in range(8):
+			win.blit(font.render(str(8-y), True, (75, 115, 153) if y % 2 == 0 else (234, 233, 210)), (2, y*(HEIGHT/8)))	
 		
 		pygame.display.update()
 
