@@ -113,27 +113,6 @@ def evaluate(board):
 
 	return evaluation
 
-def negamax(board, depth):
-	if depth == 0:
-		return evaluate(board)
-
-	moves = list(board.legal_moves)
-
-	best_evaluation = -infinity
-	best_move = 0
-
-	for move in moves:
-		board.push_san(str(move))
-		
-		score = -negamax(board, depth-1)
-		if score > best_evaluation:
-			best_evaluation = score
-			best_move = move
-		
-		board.pop()
-
-	return best_evaluation
-
 def alphabeta(board, depth, alpha, beta, transpositions):
 	if depth == 0 or board.is_game_over():
 		return board.peek(), evaluate(board)
