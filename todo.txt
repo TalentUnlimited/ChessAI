@@ -1,0 +1,4 @@
+start screen
+end screen when game is done or checkmate/stalemate
+Coordinates on the board ✅
+Play with the AI, shows what you could have done otherwise

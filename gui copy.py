@@ -1,6 +1,8 @@
 import pygame
 import math
 from main import *
+import io
+import chess.svg
 
 pygame.init()
 
@@ -19,13 +21,6 @@ RIGHT = 3
 
 move = ""
 highlighted = []
-
-skins = {
-	'default': [(234, 233, 210), (75, 115, 153)],
-	'brown': [(238, 214, 176), (184, 134, 97)],
-}
-
-skin = skins['brown']
 
 while running:
 
@@ -50,7 +45,7 @@ while running:
 						highlighted = []
 						renderBoard()
 						if len(list(board.legal_moves)) != 0:
-							makeComputerMove(5)
+							makeComputerMove(4)
 					else:
 						if move != square:
 							movingsquare = board.piece_at(chess.Move.from_uci(pseudo_move).from_square)
@@ -90,9 +85,9 @@ while running:
 		for y in range(8):
 			for x in range(8):
 				if (x+y) % 2 == 0:
-					pygame.draw.rect(win,skin[0],pygame.Rect(x*(WIDTH/8),y*(HEIGHT/8),WIDTH/8,HEIGHT/8))
+					pygame.draw.rect(win,(234, 233, 210),pygame.Rect(x*(WIDTH/8),y*(HEIGHT/8),WIDTH/8,HEIGHT/8))
 				else:
-					pygame.draw.rect(win,skin[1],pygame.Rect(x*(WIDTH/8),y*(HEIGHT/8),WIDTH/8,HEIGHT/8))
+					pygame.draw.rect(win,(75, 115, 153),pygame.Rect(x*(WIDTH/8),y*(HEIGHT/8),WIDTH/8,HEIGHT/8))
 
 		board_matrix = []
 		for rank in board.fen().split('/'):
@@ -122,11 +117,15 @@ while running:
 					win.blit(i, (x*(WIDTH/8),y*(HEIGHT/8)))
 
 		for x in range(8):
-			win.blit(font.render(chr(97+x), True, skin[0] if x % 2 == 0 else skin[1]), (x*(WIDTH/8) + WIDTH/10 , HEIGHT - HEIGHT/25))
+			win.blit(font.render(chr(97+x), True, (234, 233, 210) if x % 2 == 0 else (75, 115, 153)), (x*(WIDTH/8) + WIDTH/10 , HEIGHT - HEIGHT/25))
 
 		for y in range(8):
-			win.blit(font.render(str(8-y), True, skin[1] if y % 2 == 0 else skin[0]), (2, y*(HEIGHT/8)))	
+			win.blit(font.render(str(8-y), True, (75, 115, 153) if y % 2 == 0 else (234, 233, 210)), (2, y*(HEIGHT/8)))	
 		
+		boardsvg = io.BytesIO(chess.svg.board(chess.Board(), arrows=[chess.svg.Arrow(chess.G1, chess.F3)], coordinates=False, colors={"square light": "#00000000", "square dark": "#00000000"}).encode())
+		boardsvg = pygame.transform.smoothscale(pygame.image.load(boardsvg), size=(WIDTH,HEIGHT))
+		win.blit(boardsvg, (0,0))
+
 		pygame.display.update()
 
 	renderBoard()

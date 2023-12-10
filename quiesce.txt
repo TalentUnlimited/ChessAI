@@ -1,0 +1,24 @@
+def quiesce(board, alpha, beta):
+	evaluation = evaluate(board)
+
+	if evaluation >= beta:
+		return beta
+	alpha = max(alpha, evaluation)
+
+	moves = []
+
+	for move in list(board.legal_moves):
+		if board.is_capture(move):
+			moves.append(move)
+
+	for move in moves:
+		board.push_san(str(move))
+		evaluation = -quiesce(board, -beta, -alpha)
+		board.pop()
+
+		if evaluation >= beta:
+			return beta
+		alpha = max(alpha, evaluation)
+
+	return alpha
+
