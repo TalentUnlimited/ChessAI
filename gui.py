@@ -41,32 +41,32 @@ while running:
 				if len(move) == 0:
 					move += square
 					updateHighlighted(highlighted, square)
-				elif len(move) == 2:
+				elif len(move) == 2 and square != move:
 					pseudo_move = move + square
-					if (square != move) and chess.Move.from_uci(pseudo_move) in board.legal_moves:
-						move += square
-						makeMove(move)
+					
+					chess_pseudo_move = chess.Move.from_uci(pseudo_move)
+					if board.piece_at(chess_pseudo_move.from_square) != None:
+						if (chess.square_rank(chess_pseudo_move.to_square) == 7 and board.piece_at(chess_pseudo_move.from_square).piece_type == chess.PAWN):
+							pseudo_move += "q"
+					if chess.Move.from_uci(pseudo_move) in board.legal_moves:
+						makeMove(pseudo_move)
 						move = ""
 						highlighted = []
 						renderBoard()
 						if len(list(board.legal_moves)) != 0:
-							makeComputerMove(5)
+							makeComputerMove(4)
 					else:
-						if move != square:
-							movingsquare = board.piece_at(chess.Move.from_uci(pseudo_move).from_square)
-							goingsquare = board.piece_at(chess.Move.from_uci(pseudo_move).to_square)
-							if (movingsquare != None and goingsquare != None) and movingsquare.color == goingsquare.color:
-								move = square
-								highlighted = []
-								updateHighlighted(highlighted, square)
-							else:
-								move = ""
-								highlighted = []
-								print(f"invalid move - {pseudo_move} is not possible")	
+						chess_pseudo_move = chess.Move.from_uci(pseudo_move)
+						movingsquare = board.piece_at(chess_pseudo_move.from_square)
+						goingsquare = board.piece_at(chess_pseudo_move.to_square)
+						if goingsquare != None and movingsquare.color == goingsquare.color:
+							move = square
+							highlighted = []
+							updateHighlighted(highlighted, square)
 						else:
 							move = ""
 							highlighted = []
-							print(f"invalid move - {pseudo_move} is not possible")
+							print(f"invalid move - {pseudo_move} is not possible")	
 
 	def updateHighlighted(highlighted, square):
 		if square == []:
