@@ -6,16 +6,16 @@ pygame.init()
 
 running = True
 
-WIDTH = 500
-HEIGHT = 500
+WIDTH, HEIGHT = 500, 500
+
+SQUARE_WIDTH, SQUARE_HEIGHT = WIDTH/8, HEIGHT/8
 
 win = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption('Chess AI')
 
 font = pygame.font.SysFont(None, int(WIDTH/20))
 
-LEFT = 1
-RIGHT = 3
+LEFT, RIGHT  = 1, 3
 
 move = ""
 highlighted = []
@@ -34,7 +34,7 @@ while running:
 			running = False
 		elif event.type == pygame.MOUSEBUTTONUP:
 			if event.button == LEFT:
-				file, rank = math.floor(pygame.mouse.get_pos()[0]/(WIDTH/8)), math.floor(pygame.mouse.get_pos()[1]/(HEIGHT/8))
+				file, rank = math.floor(pygame.mouse.get_pos()[0]/(SQUARE_WIDTH)), math.floor(pygame.mouse.get_pos()[1]/(SQUARE_HEIGHT))
 				
 				square = f"{chr(97+file)}{chr(49+(7-rank))}"
 
@@ -89,10 +89,11 @@ while running:
 		win.fill((255,255,255))
 		for y in range(8):
 			for x in range(8):
+				square = pygame.Rect(x*(SQUARE_WIDTH),y*(SQUARE_HEIGHT),SQUARE_WIDTH,SQUARE_HEIGHT)
 				if (x+y) % 2 == 0:
-					pygame.draw.rect(win,skin[0],pygame.Rect(x*(WIDTH/8),y*(HEIGHT/8),WIDTH/8,HEIGHT/8))
+					pygame.draw.rect(win,skin[0],square)
 				else:
-					pygame.draw.rect(win,skin[1],pygame.Rect(x*(WIDTH/8),y*(HEIGHT/8),WIDTH/8,HEIGHT/8))
+					pygame.draw.rect(win,skin[1],square)
 
 		board_matrix = []
 		for rank in board.fen().split('/'):
@@ -116,16 +117,13 @@ while running:
 			for x in range(8):
 				
 				if chess.parse_square(f"{chr(97+x)}{8-y}") in highlighted:
-					pygame.draw.rect(win,(153, 153, 255),pygame.Rect(x*(WIDTH/8),y*(HEIGHT/8),WIDTH/8,HEIGHT/8))
+					pygame.draw.rect(win,(153, 153, 255),pygame.Rect(x*(SQUARE_WIDTH),y*(SQUARE_HEIGHT),SQUARE_WIDTH,SQUARE_HEIGHT))
 				if board_matrix[y][x] != ' ':
-					i = pygame.transform.scale(pygame.image.load(f"D:/ChessAI/Chess Pieces/{board_matrix[y][x]}.png"),(int(WIDTH/8), int(HEIGHT/8)))
-					win.blit(i, (x*(WIDTH/8),y*(HEIGHT/8)))
+					i = pygame.transform.scale(pygame.image.load(f"D:/ChessAI/Chess Pieces/{board_matrix[y][x]}.png"),(int(SQUARE_WIDTH), int(SQUARE_HEIGHT)))
+					win.blit(i, (x*(SQUARE_WIDTH),y*(SQUARE_HEIGHT)))
 
-		for x in range(8):
-			win.blit(font.render(chr(97+x), True, skin[0] if x % 2 == 0 else skin[1]), (x*(WIDTH/8) + WIDTH/10 , HEIGHT - HEIGHT/25))
-
-		for y in range(8):
-			win.blit(font.render(str(8-y), True, skin[1] if y % 2 == 0 else skin[0]), (2, y*(HEIGHT/8)))	
+		[win.blit(font.render(chr(97+x), True, skin[0] if x % 2 == 0 else skin[1]), (x*(SQUARE_WIDTH) + WIDTH/10 , HEIGHT - HEIGHT/25)) for x in range(8)]
+		[win.blit(font.render(str(8-y), True, skin[1] if y % 2 == 0 else skin[0]), (2, y*(SQUARE_HEIGHT))) for y in range(8)]	
 		
 		pygame.display.update()
 
