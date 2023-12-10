@@ -4,7 +4,7 @@ import numpy
 import math
 
 board = chess.Board()
-hello
+
 piece_values = {
 	chess.PAWN: 100,
 	chess.KNIGHT: 300,
