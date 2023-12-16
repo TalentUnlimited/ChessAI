@@ -40,7 +40,7 @@ while running:
 
 				if len(move) == 0:
 					move += square
-					updateHighlighted(highlighted, square)
+					updateHighlighted(square)
 				elif len(move) == 2 and square != move:
 					pseudo_move = move + square
 					
@@ -59,22 +59,24 @@ while running:
 						chess_pseudo_move = chess.Move.from_uci(pseudo_move)
 						movingsquare = board.piece_at(chess_pseudo_move.from_square)
 						goingsquare = board.piece_at(chess_pseudo_move.to_square)
-						if goingsquare != None and movingsquare.color == goingsquare.color:
+						if (movingsquare != None and goingsquare != None) and movingsquare.color == goingsquare.color:
 							move = square
 							highlighted = []
-							updateHighlighted(highlighted, square)
+							updateHighlighted(square)
 						else:
 							move = ""
 							highlighted = []
 							print(f"invalid move - {pseudo_move} is not possible")	
 
-	def updateHighlighted(highlighted, square):
-		if square == []:
-			highlighted = []
-		else:
-			for legal_move in board.legal_moves:
-				if legal_move.from_square == chess.parse_square(square):
-					highlighted.append(legal_move.to_square)
+	if board.is_check():
+		king_square = board.king(chess.WHITE if board.turn == 1 else chess.BLACK)
+		if king_square not in highlighted:
+			highlighted.append(king_square)
+
+	def updateHighlighted(square):
+		for legal_move in board.legal_moves:
+			if legal_move.from_square == chess.parse_square(square):
+				highlighted.append(legal_move.to_square)
 
 	def makeMove(move):
 		board.push_san(move)
