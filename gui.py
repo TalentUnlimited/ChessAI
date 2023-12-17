@@ -7,10 +7,19 @@ pygame.init()
 running = True
 
 WIDTH, HEIGHT = 500, 500
+GAP = 10
 
 SQUARE_WIDTH, SQUARE_HEIGHT = WIDTH/8, HEIGHT/8
 
-win = pygame.display.set_mode((WIDTH,HEIGHT))
+win = pygame.Surface((WIDTH,HEIGHT))
+mainWin = pygame.display.set_mode(((2*WIDTH) + (3*GAP), HEIGHT + (2*GAP)))
+
+background = pygame.image.load("StartMenuImages/background.jpg")
+logo = pygame.image.load("StartMenuImages/logo_transparent.png")
+challenge = pygame.image.load("StartMenuImages/challenge_resized.png")
+learn = pygame.image.load("StartMenuImages/learn_resized.png")
+
+
 pygame.display.set_caption('Chess AI')
 
 font = pygame.font.SysFont(None, int(WIDTH/20))
@@ -27,21 +36,45 @@ skins = {
 
 skin = skins['brown']
 
+game_state = 'start_menu'
+
 while running:
+	area = pygame.Rect(GAP, GAP, WIDTH, HEIGHT)
+
+	challenge_button_area = pygame.Rect(20, 250, challenge.get_width(), challenge.get_height())
+	learn_button_area = pygame.Rect(20, 370, challenge.get_width(), challenge.get_height())
+
+
+	if game_state == 'start_menu':
+		mainWin.blit(background, (0,-100))
+		mainWin.blit(logo, (20, 20))
+		mainWin.blit(challenge, (20, 250))
+		mainWin.blit(learn, (20, 370))
+
+
+		pygame.display.update()	
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
-		elif event.type == pygame.MOUSEBUTTONUP:
+		elif event.type == pygame.MOUSEBUTTONUP and game_state == "start_menu":
 			if event.button == LEFT:
-				file, rank = math.floor(pygame.mouse.get_pos()[0]/(SQUARE_WIDTH)), math.floor(pygame.mouse.get_pos()[1]/(SQUARE_HEIGHT))
+				if challenge_button_area.collidepoint(event.pos):
+					game_state = "play01"
+		elif event.type == pygame.MOUSEBUTTONUP and game_state == "play01":
+			if event.button == LEFT and area.collidepoint(event.pos):
+				file, rank = math.floor((pygame.mouse.get_pos()[0] - GAP)/(SQUARE_WIDTH)), math.floor((pygame.mouse.get_pos()[1] - GAP)/(SQUARE_HEIGHT))
 				
 				square = f"{chr(97+file)}{chr(49+(7-rank))}"
 
 				if len(move) == 0:
 					move += square
 					updateHighlighted(square)
-				elif len(move) == 2 and square != move:
+				elif len(move) == 2:
+					if square == move:
+						move = ""
+						highlighted = []
+						continue
 					pseudo_move = move + square
 					
 					chess_pseudo_move = chess.Move.from_uci(pseudo_move)
@@ -67,11 +100,6 @@ while running:
 							move = ""
 							highlighted = []
 							print(f"invalid move - {pseudo_move} is not possible")	
-
-	if board.is_check():
-		king_square = board.king(chess.WHITE if board.turn == 1 else chess.BLACK)
-		if king_square not in highlighted:
-			highlighted.append(king_square)
 
 	def updateHighlighted(square):
 		for legal_move in board.legal_moves:
@@ -114,6 +142,10 @@ while running:
 			
 			board_matrix.append(row)
 		
+		if board.is_check():
+			king_square = board.king(chess.WHITE if board.turn == 1 else chess.BLACK)
+			if king_square not in highlighted:
+				highlighted.append(king_square)
 			
 		for y in range(8):
 			for x in range(8):
@@ -127,6 +159,9 @@ while running:
 		[win.blit(font.render(chr(97+x), True, skin[0] if x % 2 == 0 else skin[1]), (x*(SQUARE_WIDTH) + WIDTH/10 , HEIGHT - HEIGHT/25)) for x in range(8)]
 		[win.blit(font.render(str(8-y), True, skin[1] if y % 2 == 0 else skin[0]), (2, y*(SQUARE_HEIGHT))) for y in range(8)]	
 		
+		mainWin.blit(background, (0,-100))
+		mainWin.blit(win, (GAP,GAP))
+
 		pygame.display.update()
 
-	renderBoard()
+	renderBoard() if game_state == 'play01' else None
