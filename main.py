@@ -186,6 +186,41 @@ def ordermoves(moves):
 	
 	return list(dict(sorted(moveScoresDict.items(), key=lambda item: item[1], reverse=True)).keys())
 
+import csv
+import random
+
+openings_allECOs = []
+openings_allECOs.append(list(csv.reader(open("chess-openings/a.tsv", 'r'), delimiter = '\t')))
+openings_allECOs.append(list(csv.reader(open("chess-openings/b.tsv", 'r'), delimiter = '\t')))
+openings_allECOs.append(list(csv.reader(open("chess-openings/c.tsv", 'r'), delimiter = '\t')))
+openings_allECOs.append(list(csv.reader(open("chess-openings/d.tsv", 'r'), delimiter = '\t')))
+openings_allECOs.append(list(csv.reader(open("chess-openings/e.tsv", 'r'), delimiter = '\t')))
+
+def best_move(board, depth):
+	if board.fullmove_number <= 7:
+		current_movestack = ""
+
+		for move in board.move_stack:
+			current_movestack += chess.Board().uci(move) + " "
+
+		next_move_outcomes = []
+
+		for opening_classification in openings_allECOs:
+			for opening in opening_classification:
+				if opening[3].startswith(current_movestack) and len(opening[3]) > len(current_movestack):
+					next_move_possible = opening[3].split(current_movestack)[1].split(' ')[0]
+					
+					next_move_outcomes.append(next_move_possible)
+
+		if next_move_outcomes != []:
+			move = board.parse_san(random.choice(next_move_outcomes))
+		else:
+			move, _ = alphabeta(board, depth, -infinity, infinity, {})
+	else:
+		move, _ = alphabeta(board, depth, -infinity, infinity, {})
+	
+	return move
+
 #board = chess.Board(fen='rnbqkb1r/pppp1pp1/4pn1p/6B1/3PP3/8/PPP2PPP/RN1QKBNR w KQkq - 0 4')
 
 # for x in range(50):

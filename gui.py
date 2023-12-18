@@ -111,7 +111,8 @@ while running:
 		renderBoard()
 
 	def makeComputerMove(depth):	
-		move, _ = alphabeta(board, depth, -infinity, infinity, {})
+		#move, _ = alphabeta(board, depth, -infinity, infinity, {})
+		move = best_move(board, depth)
 		board.push_san(str(move))
 		renderBoard()
 
