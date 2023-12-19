@@ -16,9 +16,7 @@ mainWin = pygame.display.set_mode(((2*WIDTH) + (3*GAP), HEIGHT + (2*GAP)))
 
 background = pygame.image.load("StartMenuImages/background.jpg")
 logo = pygame.image.load("StartMenuImages/logo_transparent.png")
-challenge = pygame.image.load("StartMenuImages/challenge_resized.png")
-learn = pygame.image.load("StartMenuImages/learn_resized.png")
-
+play = pygame.image.load("StartMenuImages/challenge_resized.png")
 
 pygame.display.set_caption('Chess AI')
 
@@ -41,15 +39,12 @@ game_state = 'start_menu'
 while running:
 	area = pygame.Rect(GAP, GAP, WIDTH, HEIGHT)
 
-	challenge_button_area = pygame.Rect(20, 250, challenge.get_width(), challenge.get_height())
-	learn_button_area = pygame.Rect(20, 370, challenge.get_width(), challenge.get_height())
-
+	play_button_area = pygame.Rect(20, 250, play.get_width(), play.get_height())
 
 	if game_state == 'start_menu':
 		mainWin.blit(background, (0,-100))
 		mainWin.blit(logo, (20, 20))
-		mainWin.blit(challenge, (20, 250))
-		mainWin.blit(learn, (20, 370))
+		mainWin.blit(play, (20, 250))
 
 
 		pygame.display.update()	
@@ -59,11 +54,9 @@ while running:
 			running = False
 		elif event.type == pygame.MOUSEBUTTONUP and game_state == "start_menu":
 			if event.button == LEFT:
-				if challenge_button_area.collidepoint(event.pos):
-					game_state = "play01"
-				elif learn_button_area.collidepoint(event.pos):
-					game_state = "play02"
-		elif event.type == pygame.MOUSEBUTTONUP and game_state.startswith("play"):
+				if play_button_area.collidepoint(event.pos):
+					game_state = "play"
+		elif event.type == pygame.MOUSEBUTTONUP and game_state == "play":
 			if event.button == LEFT and area.collidepoint(event.pos):
 				file, rank = math.floor((pygame.mouse.get_pos()[0] - GAP)/(SQUARE_WIDTH)), math.floor((pygame.mouse.get_pos()[1] - GAP)/(SQUARE_HEIGHT))
 				
@@ -165,9 +158,7 @@ while running:
 		mainWin.blit(background, (0,-100))
 		mainWin.blit(win, (GAP,GAP))
 
-		mainWin.blit(win, (WIDTH+(2*GAP), GAP)) if game_state == "play02" else None
-
 		pygame.display.update()
 
-	if game_state.startswith("play"):
+	if game_state == "play":
 		renderBoard()
