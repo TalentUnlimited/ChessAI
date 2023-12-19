@@ -207,10 +207,15 @@ def best_move(board, depth):
 
 		for opening_classification in openings_allECOs:
 			for opening in opening_classification:
-				if opening[3].startswith(current_movestack) and len(opening[3]) > len(current_movestack):
-					next_move_possible = opening[3].split(current_movestack)[1].split(' ')[0]
-					
+				if current_movestack != "":
+					if opening[3].startswith(current_movestack) and len(opening[3]) > len(current_movestack):
+						next_move_possible = opening[3].split(current_movestack)[1].split(' ')[0]
+						
+						next_move_outcomes.append(next_move_possible)
+				else:
+					next_move_possible = opening[3].split(' ')[0]
 					next_move_outcomes.append(next_move_possible)
+					
 
 		if next_move_outcomes != []:
 			move = board.parse_san(random.choice(next_move_outcomes))
