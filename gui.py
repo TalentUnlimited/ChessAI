@@ -154,7 +154,7 @@ while running:
 				if chess.parse_square(f"{chr(97+x)}{8-y}") in highlighted:
 					pygame.draw.rect(win,(153, 153, 255),pygame.Rect(x*(SQUARE_WIDTH),y*(SQUARE_HEIGHT),SQUARE_WIDTH,SQUARE_HEIGHT))
 				if board_matrix[y][x] != ' ':
-					i = pygame.transform.scale(pygame.image.load(f"D:/ChessAI/Chess Pieces/{board_matrix[y][x]}.png"),(int(SQUARE_WIDTH), int(SQUARE_HEIGHT)))
+					i = pygame.transform.scale(pygame.image.load(f"Chess Pieces/{board_matrix[y][x]}.png"),(int(SQUARE_WIDTH), int(SQUARE_HEIGHT)))
 					win.blit(i, (x*(SQUARE_WIDTH),y*(SQUARE_HEIGHT)))
 
 		[win.blit(font.render(chr(97+x), True, skin[0] if x % 2 == 0 else skin[1]), (x*(SQUARE_WIDTH) + WIDTH/10 , HEIGHT - HEIGHT/25)) for x in range(8)]
